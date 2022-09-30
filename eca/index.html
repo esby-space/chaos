@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>elementary cellular automaton</title>
+    </head>
+
+    <body>
+        <div id="eca">
+            <div id="container"></div>
+        </div>
+
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            #eca #container {
+                position: relative;
+                width: 100vw;
+                aspect-ratio: 1 / 1;
+            }
+
+            #eca canvas {
+                background-color: hsl(0, 0%, 80%);
+                position: absolute;
+                inset: 0;
+            }
+        </style>
+
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
