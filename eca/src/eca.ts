@@ -1,28 +1,23 @@
 import { Canvas } from "./canvas";
 
-const ROWS = 32;
-const COLUMNS = 32;
+// state = describing what's going on above
+type Cell = [state: number, alive: boolean];
+type Grid = Cell[][];
 
-// state = mini-rule describing what's going on above
-// status = whether the cell is alive or not
-type Cell = [state: number, status: boolean];
-type Grid = Cell[][]
-
-export const ECA = (canvas: Canvas) => {
+export const ECA = (rows: number, columns: number) => {
     let grid: Grid = [];
-    for (let y = 0; y < COLUMNS; y++) {
+    for (let y = 0; y < rows; y++) {
         grid[y] = [];
-        for (let x = 0; x < ROWS; x++) {
+        for (let x = 0; x < columns; x++) {
             grid[y][x] = [0, false];
         }
     }
 
     return {
-        tileSize: canvas.element.width / COLUMNS,
+        tileSize: 0,
         grid,
 
-        // rules are stored as the sum of powers of 2 to easily test
-        // for example, rule 90 => [2, 8, 16, 64]
+        // rule 90 => [2, 8, 16, 64]
         rules: [0] as number[],
         set rule(rule: number) {
             const binary = rule.toString(2).padStart(8, "0");
@@ -32,6 +27,7 @@ export const ECA = (canvas: Canvas) => {
                     return 2 ** (7 - i);
                 })
                 .filter(Number) as number[];
+            this.update();
         },
 
         update() {
@@ -39,14 +35,15 @@ export const ECA = (canvas: Canvas) => {
                 if (y == 0) return; // we don't touch the first layer
                 row.forEach((_, x) => {
                     let above = "";
-                    above += x == 0 || !this.grid[y - 1][x - 1][1] ? "0" : "1";
-                    above += this.grid[y - 1][x][1] ? "1" : "0";
-                    above += x == COLUMNS - 1 || !this.grid[y - 1][x + 1][1] ? "0" : "1";
+                    above += `${+(x != 0 && this.grid[y - 1][x - 1][1])}`;
+                    above += `${+this.grid[y - 1][x][1]}`;
+                    above += `${+(
+                        x != columns - 1 && this.grid[y - 1][x + 1][1]
+                    )}`;
 
                     let state = 2 ** parseInt(above, 2);
-                    let status = this.rules.includes(state);
-
-                    this.grid[y][x] = [state, status];
+                    let alive = this.rules.includes(state);
+                    this.grid[y][x] = [state, alive];
                 });
             });
         },
@@ -57,8 +54,20 @@ export const ECA = (canvas: Canvas) => {
             this.update();
         },
 
+        random() {
+            this.grid[0].forEach(
+                (_, x) => (this.grid[0][x][1] = Math.random() < 0.5)
+            );
+            this.update();
+        },
+
+        clear() {
+            this.grid[0].forEach((_, x) => (this.grid[0][x][1] = false));
+            this.update();
+        },
+
         resizeTiles(size: number) {
-            this.tileSize = size / COLUMNS;
+            this.tileSize = size / columns;
         },
 
         draw(canvas: Canvas) {
@@ -66,6 +75,10 @@ export const ECA = (canvas: Canvas) => {
             this.grid.forEach((row, y) => {
                 row.forEach((cell, x) => {
                     if (cell[1]) {
+                        canvas.context.fillStyle =
+                            y == 0
+                                ? `black`
+                                : `hsl(${Math.log2(cell[0]) * 50}, 70%, 60%)`;
                         canvas.context.fillRect(
                             x * this.tileSize,
                             y * this.tileSize,
