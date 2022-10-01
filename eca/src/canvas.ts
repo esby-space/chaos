@@ -10,11 +10,10 @@ export const Canvas = (selector: string) => {
         container,
         context,
 
-        onresize: (_width: number, _height: number) => {},
         onclick: (_x: number, _y: number) => {},
-
         append() {
             this.container.append(this.element);
+            this.resize();
         },
 
         resize() {
@@ -24,11 +23,6 @@ export const Canvas = (selector: string) => {
             this.element.style.height = height + "px";
             this.element.width = width * window.devicePixelRatio;
             this.element.height = height * window.devicePixelRatio;
-            this.onresize(this.element.width, this.element.height);
-        },
-
-        render(fn: (context: CanvasRenderingContext2D) => void) {
-            fn(this.context);
         },
 
         clear() {

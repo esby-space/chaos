@@ -6,9 +6,22 @@ const main = () => {
     const simulation = ECA(canvas);
     canvas.append();
 
-    simulation.grid[10][10] = 1;
-    simulation.draw();
+    simulation.resizeTiles(canvas.element.width);
+    window.addEventListener('resize', () => {
+        simulation.resizeTiles(canvas.element.width);
+        simulation.draw(canvas);
+    });
+
+    canvas.onclick = (x, y) => {
+        simulation.flip(
+            Math.floor(x / simulation.tileSize),
+            Math.floor(y / simulation.tileSize)
+        );
+        simulation.draw(canvas);
+    };
+
+    simulation.rule = 30;
 };
 
 main();
-export {};
+

@@ -3,7 +3,7 @@ import sys
 
 
 def main():
-    print("iterating linear functions")
+    print("\niterating linear functions")
     print("input linear function in the form of y = ax + b")
 
     a = float(sys.argv[1] if len(sys.argv) > 1 else input("a = "))
